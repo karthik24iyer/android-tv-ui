@@ -1,6 +1,7 @@
 package com.ansub.tvhome;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -74,4 +75,57 @@ final class LineIcon extends Drawable {
     @Override public int getOpacity() { return PixelFormat.TRANSLUCENT; }
     @Override public int getIntrinsicWidth() { return 44; }
     @Override public int getIntrinsicHeight() { return 44; }
+
+    // A phone-style battery, sized by its bounds (about twice as wide as tall): an outline with a nub,
+    // filled to the level. Green with a bolt while charging, red at 20% or less, white otherwise.
+    static final class Battery extends Drawable {
+        private final int level;
+        private final boolean charging;
+        private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        Battery(int level, boolean charging) {
+            this.level = level;
+            this.charging = charging;
+            p.setStrokeJoin(Paint.Join.ROUND);
+        }
+
+        @Override
+        public void draw(Canvas c) {
+            android.graphics.Rect b = getBounds();
+            float h = b.height(), w = b.width(), sw = h * 0.09f, nub = w * 0.08f, r = h * 0.25f;
+            RectF body = new RectF(b.left + sw / 2, b.top + sw / 2, b.right - nub - sw / 2, b.bottom - sw / 2);
+            p.setStyle(Paint.Style.STROKE);
+            p.setStrokeWidth(sw);
+            p.setColor(0x99FFFFFF);
+            c.drawRoundRect(body, r, r, p);
+            p.setStyle(Paint.Style.FILL);
+            c.drawRoundRect(new RectF(b.right - nub, b.top + h * 0.33f, b.right, b.bottom - h * 0.33f), nub / 2, nub / 2, p);
+
+            float pad = sw * 1.6f;
+            RectF fill = new RectF(body.left + pad, body.top + pad, body.right - pad, body.bottom - pad);
+            fill.right = fill.left + fill.width() * level / 100f;
+            p.setColor(charging ? 0xFF34C759 : level <= 20 ? 0xFFFF453A : 0xEBFFFFFF);
+            if (level > 0) c.drawRoundRect(fill, r * 0.6f, r * 0.6f, p);
+
+            if (!charging) return;
+            Path bolt = new Path();
+            float[] pts = {0.56f, 0.06f, 0.30f, 0.56f, 0.48f, 0.56f, 0.42f, 0.94f, 0.70f, 0.42f, 0.52f, 0.42f};
+            for (int i = 0; i < pts.length; i += 2) {
+                float x = body.left + body.width() * pts[i], y = body.top + body.height() * pts[i + 1];
+                if (i == 0) bolt.moveTo(x, y); else bolt.lineTo(x, y);
+            }
+            bolt.close();
+            p.setStyle(Paint.Style.STROKE); // dark edge so the bolt reads over the green
+            p.setStrokeWidth(sw);
+            p.setColor(0xFF0A0809);
+            c.drawPath(bolt, p);
+            p.setStyle(Paint.Style.FILL);
+            p.setColor(Color.WHITE);
+            c.drawPath(bolt, p);
+        }
+
+        @Override public void setAlpha(int a) { p.setAlpha(a); }
+        @Override public void setColorFilter(ColorFilter cf) { p.setColorFilter(cf); }
+        @Override public int getOpacity() { return PixelFormat.TRANSLUCENT; }
+    }
 }

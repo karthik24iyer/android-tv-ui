@@ -69,7 +69,7 @@ adb -s "$TV" forward tcp:8765 tcp:8765 >/dev/null
 curl -fs "http://127.0.0.1:8765/battery?name=Test%20Phone&level=42&charging=on" | grep -q ok || fail "battery reading refused"
 curl -fs "http://127.0.0.1:8765/battery?name=Test%20Phone&level=420" >/dev/null && fail "accepted level 420"
 adb -s "$TV" shell input keyevent KEYCODE_HOME; sleep 2
-ui | grep -q 'text="Test Phone  42% ⚡"' || fail "battery line not shown"
+ui | grep -q 'text="Test Phone[^"]*42%"' || fail "battery line not shown"
 adb -s "$TV" forward --remove tcp:8765
 
 echo "== undo puts the TV back"

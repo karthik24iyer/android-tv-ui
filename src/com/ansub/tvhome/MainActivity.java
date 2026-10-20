@@ -702,18 +702,26 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    // "Karthik's S23  84%", a bolt while charging; phones quiet for STALE_MS are left out.
+    // "Karthik's S23  [battery] 84%", like a phone's status bar; phones quiet for STALE_MS are left out.
     private void refreshBattery() {
         if (batteryText == null) return;
-        StringBuilder sb = new StringBuilder();
+        android.text.SpannableStringBuilder sb = new android.text.SpannableStringBuilder();
         long now = System.currentTimeMillis();
+        int ih = px(22), iw = px(44);
+        int align = android.os.Build.VERSION.SDK_INT >= 29 ? android.text.style.DynamicDrawableSpan.ALIGN_CENTER
+                : android.text.style.DynamicDrawableSpan.ALIGN_BASELINE;
         for (java.util.Map.Entry<String, ?> e : new TreeMap<>(getSharedPreferences(PREFS, 0).getAll()).entrySet()) {
             if (!e.getKey().startsWith(BATTERY) || !(e.getValue() instanceof String)) continue;
             String[] v = ((String) e.getValue()).split(",");
             if (v.length != 3 || now - Long.parseLong(v[2]) > STALE_MS) continue;
             if (sb.length() > 0) sb.append("     ");
-            sb.append(e.getKey().substring(BATTERY.length())).append("  ").append(v[0]).append('%');
-            if (v[1].equals("1")) sb.append(" ⚡");
+            sb.append(e.getKey().substring(BATTERY.length())).append("  ");
+            Drawable icon = new LineIcon.Battery(Integer.parseInt(v[0]), v[1].equals("1"));
+            icon.setBounds(0, 0, iw, ih);
+            int at = sb.length();
+            sb.append('▮'); // stands in for the icon
+            sb.setSpan(new android.text.style.ImageSpan(icon, align), at, at + 1, 0);
+            sb.append(' ').append(v[0]).append('%');
         }
         batteryText.setText(sb);
     }
