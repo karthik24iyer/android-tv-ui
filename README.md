@@ -37,6 +37,7 @@ http://192.168.0.6:8765/battery?name=Karthik's%20S23&level=84&charging=on
 3. Samsung: Settings → Apps → MacroDroid → Battery → **Unrestricted**, or readings get delayed.
 
 Test from a laptop: `curl "http://192.168.0.6:8765/battery?name=Test&level=50"` prints `ok`.
+Remove a phone straight away: `curl "http://192.168.0.6:8765/battery?name=Test&remove=1"`.
 
 ## Setup
 

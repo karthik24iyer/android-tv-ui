@@ -693,6 +693,11 @@ public class MainActivity extends Activity {
             if (k.equals("name")) name = v;
             else if (k.equals("level")) try { level = Math.round(Float.parseFloat(v.replace("%", ""))); } catch (Exception ignored) {}
             else if (k.equals("charging")) charging = v.toLowerCase(java.util.Locale.ROOT);
+            else if (k.equals("remove")) level = 101; // marks a removal: ?name=...&remove=1
+        }
+        if (level == 101 && name != null) {
+            getSharedPreferences(PREFS, 0).edit().remove(BATTERY + name).apply();
+            return true;
         }
         if (name == null || name.isEmpty() || name.length() > 40 || level < 0 || level > 100) return false;
         boolean on = charging.equals("on") || charging.equals("true") || charging.equals("yes");
