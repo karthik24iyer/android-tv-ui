@@ -1,0 +1,43 @@
+# VW (Skyworth) SW-22AE NF TV cleanup - 2026-10-19 - TV at 192.168.0.6
+# Free memory before: 713 MB available (MemAvailable 713,616 kB)
+#
+# UNDO one app:      adb shell pm enable <package>
+# UNDO everything:   for p in $(adb shell pm list packages -d | tr -d '\r' | sed 's/package://'); do adb shell pm enable "$p"; done
+# UNDO home screen:  sh undo.sh <TV_IP:port>   (from the tv-detox folder)
+# Re-check later:    sh check.sh <TV_IP:port> --fix tv-cleanup-changes.txt
+#
+# Left ON on purpose: com.smartdevice.dailyshortcut (Art Time) - TV marks it always-required.
+
+# Turned off (apps disabled, nothing deleted)
+off fusion.android.tv.demo                # RetailDemo
+off com.coocaa.demonow.lightining         # DemoNowLightning
+off com.smartdevice.epopplayer            # E-POP shop promo
+off com.smartdevice.recommendation        # Daily Play recommendations
+off com.smartdevice.aftersale             # Aftersale
+off com.Smartdevice.emanual               # E-Manual
+off com.google.android.play.games         # Google Play Games
+off com.google.android.feedback           # Google Feedback
+off com.android.tv.feedbackconsent        # TV feedback consent
+off com.android.printspooler              # Print Spooler
+off com.google.android.marvin.talkback    # TalkBack
+off com.google.android.katniss            # Google voice search (remote mic button)
+off com.google.android.tv.assistant       # Google Assistant
+off com.google.android.apps.tv.dreamx     # Ambient screensaver
+off com.tianci.localmedia                 # Multimedia Player (USB)
+
+# Home screen (tv-detox). Undo both with: sh undo.sh <TV_IP:port>
+off com.google.android.apps.tv.launcherx    # Google TV home screen
+off com.google.android.tungsten.setupwraith # Google TV setup app (was re-enabling Google TV home)
+
+# Settings (old value in brackets - undo with: adb shell settings put <ns> <key> <old>)
+# Animations: turned off, then put back to the originals (1.5 / 1.0 / 0.5) at your request.
+secure screensaver_enabled 0          # [1]
+secure screensaver_activate_on_sleep 0  # [1]
+secure screensaver_activate_on_dock 0   # [1]
+secure sleep_timeout 300000           # [3600000 = 1 hour]
+# (screen_off_timeout was also set to 300000, but the TV resets it to "never" on boot; sleep_timeout above is what controls sleep.)
+#
+# Free memory after restart: 597 MB available, with Stremio open in front (Stremio alone: 461 MB).
+
+# App order on the home screen (pass to install.sh):
+# com.stremio.one,com.google.android.youtube.tv,in.startv.hotstar,com.amazon.amazonvideo.livingroom,com.google.android.youtube.tvmusic,com.graymatrix.did,com.sonyliv,tv.airtel.xstream.tvapp,com.discoveryplus.tv.android,com.formulaone.production,com.netflix.ninja,com.jio.media.stb.ondemand,com.suntv.sunnxt,com.apple.atve.androidtv.appletv,ar.tvplayer.tv,com.mxtech.videoplayer.television,com.valvesoftware.steamlink,com.tech.downloader,com.google.android.videos
