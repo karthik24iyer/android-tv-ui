@@ -695,7 +695,8 @@ public class MainActivity extends Activity {
             else if (k.equals("charging")) charging = v.toLowerCase(java.util.Locale.ROOT);
         }
         if (name == null || name.isEmpty() || name.length() > 40 || level < 0 || level > 100) return false;
-        boolean on = charging.equals("on") || charging.equals("1") || charging.equals("true") || charging.equals("yes");
+        boolean on = charging.equals("on") || charging.equals("true") || charging.equals("yes");
+        try { on |= Float.parseFloat(charging) > 0; } catch (Exception ignored) {} // 1, or a wattage like 15.2
         getSharedPreferences(PREFS, 0).edit()
                 .putString(BATTERY + name, level + "," + (on ? 1 : 0) + "," + System.currentTimeMillis()).apply();
         return true;

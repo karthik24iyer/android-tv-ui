@@ -26,14 +26,14 @@ The home screen listens on port 8765; a phone hides itself after 30 quiet minute
 http://192.168.0.6:8765/battery?name=Karthik's%20S23&level=84&charging=on
 ```
 
-`charging` takes on/off, 1/0, true/false or yes/no. Spaces in the name must be `%20`.
+`charging` takes on/off, true/false, yes/no, or a number (charging wattage: above 0 means charging). Spaces in the name must be `%20`.
 
 **MacroDroid on the phone**
 
 1. Add Macro. Triggers: **Battery Level → Any change**, plus **Power Connected** and
    **Power Disconnected** (so the bolt shows straight away).
 2. Action: **Connectivity → HTTP Request**, method GET, URL as above, with `84` and `on`
-   replaced by the magic text (the `...` button) for *Battery level* and *Power connected*.
+   replaced by the magic text (the `...` button) for *Battery level* and *Charging wattage (W)*.
 3. Samsung: Settings → Apps → MacroDroid → Battery → **Unrestricted**, or readings get delayed.
 
 Test from a laptop: `curl "http://192.168.0.6:8765/battery?name=Test&level=50"` prints `ok`.
